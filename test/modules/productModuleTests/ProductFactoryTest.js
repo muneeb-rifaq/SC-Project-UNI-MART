@@ -1,7 +1,7 @@
 import assert from "assert";
-import ProductFactory from "../../src/backend/modules/productModules/ProductFactory.js";
+import ProductFactory from "../../../src/backend/modules/productModules/ProductFactory.js";
 
-class ProductTests {
+class ProductFactoryTests {
   // -------------------------------------------
   // Test 1: Create a valid product
   // -------------------------------------------
@@ -104,4 +104,4 @@ class ProductTests {
 }
 
 // Run tests
-new ProductTests().runAll();
+new ProductFactoryTests().runAll();

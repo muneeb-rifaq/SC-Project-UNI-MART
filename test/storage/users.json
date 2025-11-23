@@ -1,0 +1,52 @@
+[
+  {
+    "userId": 1,
+    "username": "john_doe",
+    "email": "john_doe@mail.com",
+    "passwordHash": "$2b$10$IyQn0wo6/mgMllIRWW0Qqehxeqk8noyymnNImKAJK6PT/TtIfXl5u",
+    "role": "user",
+    "createdAt": "2025-11-23T11:41:53.428Z",
+    "updatedAt": "2025-11-23T11:41:53.861Z",
+    "lastLogin": null
+  },
+  {
+    "userId": 2,
+    "username": "eve_williams",
+    "email": "eve_williams@test.org",
+    "passwordHash": "$2b$10$.u7seUVd2oWOlSF6tY8hlef6A3tkgIFfb5kmAfhIpWEOHk59uX74K",
+    "role": "user",
+    "createdAt": "2025-11-23T11:41:53.511Z",
+    "updatedAt": "2025-11-23T11:41:53.861Z",
+    "lastLogin": null
+  },
+  {
+    "userId": 3,
+    "username": "bob_jones",
+    "email": "bob_jones@mail.com",
+    "passwordHash": "$2b$10$Xn3.mtjfGc979eviaDB5levVNOPCn8OHNhY8TlydWWenrloMkZUHe",
+    "role": "user",
+    "createdAt": "2025-11-23T11:41:53.588Z",
+    "updatedAt": "2025-11-23T11:41:53.861Z",
+    "lastLogin": null
+  },
+  {
+    "userId": 101,
+    "username": "eve_williams",
+    "email": "updated101@example.com",
+    "passwordHash": "$2b$10$hgN0S8mj7I2ubVN2O1Brh.yvYr487tqwuPrwgl6k2e/XVVVcd8jD.",
+    "role": "user",
+    "createdAt": "2025-11-23T11:41:53.682Z",
+    "updatedAt": "2025-11-23T11:41:53.861Z",
+    "lastLogin": null
+  },
+  {
+    "userId": 103,
+    "username": "bob_jones",
+    "email": "bob_jones@example.com",
+    "passwordHash": "$2b$10$sLdPsfwyoGs3INLiOUFBS.H.B0bfH/XBgy41okQe3JM2YgPX1./de",
+    "role": "user",
+    "createdAt": "2025-11-23T11:41:53.843Z",
+    "updatedAt": "2025-11-23T11:41:53.861Z",
+    "lastLogin": null
+  }
+]

@@ -3,15 +3,15 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import ProductFactory from "../../src/backend/modules/productModules/ProductFactory.js";
-import ProductService from "../../src/backend/modules/productModules/ProductService.js";
+import ProductFactory from "../../../src/backend/modules/productModules/ProductFactory.js";
+import ProductService from "../../../src/backend/modules/productModules/ProductService.js";
 
 // ----------------------------------------
 // Setup test file path
 // ----------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const TEST_FILE = path.resolve(__dirname, "products_test.db");
+const TEST_FILE = path.resolve(__dirname, "../../storage/unimartDB.db");
 
 // Remove test file if it exists for a clean start
 if (fs.existsSync(TEST_FILE)) fs.unlinkSync(TEST_FILE);
@@ -72,7 +72,7 @@ console.log(
 // ----------------------------------------
 // 6. Erase all products
 // ----------------------------------------
-console.log("\n=== Erase all products ===");
-service.eraseAll();
-console.table(service.getAll().map((p) => p.toJSON()));
-console.log("All products erased");
+// console.log("\n=== Erase all products ===");
+// service.eraseAll();
+// console.table(service.getAll().map((p) => p.toJSON()));
+// console.log("All products erased");

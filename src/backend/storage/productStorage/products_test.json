@@ -7,7 +7,7 @@
     "sellerId": 2,
     "category": "Electronics",
     "stock": 17,
-    "dateUpdated": "2025-11-23T07:22:06.640Z"
+    "dateUpdated": "2025-11-23T07:51:50.715Z"
   },
   {
     "productId": 2,
@@ -17,7 +17,7 @@
     "sellerId": 29,
     "category": "Electronics",
     "stock": 54,
-    "dateUpdated": "2025-11-23T07:22:06.640Z"
+    "dateUpdated": "2025-11-23T07:51:50.715Z"
   },
   {
     "productId": 3,
@@ -27,7 +27,7 @@
     "sellerId": 43,
     "category": "Computers",
     "stock": 35,
-    "dateUpdated": "2025-11-23T07:22:06.640Z"
+    "dateUpdated": "2025-11-23T07:51:50.715Z"
   },
   {
     "productId": 4,
@@ -37,16 +37,26 @@
     "sellerId": 2,
     "category": "collectible",
     "stock": 5,
-    "dateUpdated": "2025-11-23T07:22:06.640Z"
+    "dateUpdated": "2025-11-23T07:51:50.715Z"
   },
   {
     "productId": 5,
-    "name": "Cool Computer",
-    "description": "a very cool computer",
-    "price": 12,
+    "name": "Cool Computers",
+    "description": "a very cool computerset",
+    "price": 122,
     "sellerId": 1,
-    "category": "gadgets",
-    "stock": 32,
-    "dateUpdated": "2025-11-23T07:22:06.640Z"
+    "category": "gadgetssa",
+    "stock": 322,
+    "dateUpdated": "2025-11-23T07:51:50.715Z"
+  },
+  {
+    "productId": 6,
+    "name": "gadget",
+    "description": "personnage",
+    "price": 2,
+    "sellerId": 3,
+    "category": "12",
+    "stock": 2,
+    "dateUpdated": "2025-11-23T07:51:50.714Z"
   }
 ]

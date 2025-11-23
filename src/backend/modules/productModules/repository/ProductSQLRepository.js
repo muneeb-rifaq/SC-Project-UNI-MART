@@ -11,7 +11,7 @@ class ProductSQLRepository extends ProductRepository {
     this.db = new Database(dbPath);
 
     this.initializeTable();
-    this.initializeSampleRows();
+    //this.initializeSampleRows();
   }
 
   initializeTable() {

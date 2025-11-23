@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 
-import ProductService from "../../src/backend/modules/productModules/ProductService.js";
+import ProductService from "../../../src/backend/modules/productModules/ProductService.js";
 
 // ---------------------------------------------------
 // Setup file path
@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Change this path to match your SQL/JSON backend file
-const DB_FILE = path.resolve(__dirname, "products_test.db");
+const DB_FILE = path.resolve(__dirname, "../../storage/unimartDB.db");
 
 // ---------------------------------------------------
 // Ensure file exists

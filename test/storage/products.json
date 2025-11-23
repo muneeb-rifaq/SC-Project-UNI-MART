@@ -1,0 +1,52 @@
+[
+  {
+    "productId": 1,
+    "name": "Phone",
+    "description": "Latest model",
+    "price": 477.67,
+    "sellerId": 48,
+    "category": "Accessories",
+    "stock": 21,
+    "dateUpdated": "2025-11-23T10:37:17.503Z"
+  },
+  {
+    "productId": 2,
+    "name": "Phone",
+    "description": "Limited edition",
+    "price": 235.51,
+    "sellerId": 48,
+    "category": "Accessories",
+    "stock": 23,
+    "dateUpdated": "2025-11-23T10:37:17.503Z"
+  },
+  {
+    "productId": 3,
+    "name": "Watch",
+    "description": "Limited edition",
+    "price": 177.81,
+    "sellerId": 49,
+    "category": "Gadgets",
+    "stock": 38,
+    "dateUpdated": "2025-11-23T10:37:17.503Z"
+  },
+  {
+    "productId": 101,
+    "name": "Headphones",
+    "description": "High quality product",
+    "price": 999,
+    "sellerId": 33,
+    "category": "Accessories",
+    "stock": 32,
+    "dateUpdated": "2025-11-23T10:37:17.503Z"
+  },
+  {
+    "productId": 103,
+    "name": "Watch",
+    "description": "Top-selling item",
+    "price": 439.1,
+    "sellerId": 35,
+    "category": "Accessories",
+    "stock": 24,
+    "dateUpdated": "2025-11-23T10:37:17.503Z"
+  }
+]

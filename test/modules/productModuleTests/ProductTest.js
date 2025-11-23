@@ -1,6 +1,6 @@
-// product.test.js
+// productTest.js
 import assert from "assert";
-import Product from "../../src/backend/modules/productModules/Product.js";
+import Product from "../../../src/backend/modules/productModules/Product.js";
 
 // Create a product instance
 const p = new Product(1, "Laptop", "Fast laptop", 1200, 10, "Electronics", 5);
