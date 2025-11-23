@@ -1,0 +1,52 @@
+[
+  {
+    "productId": 1,
+    "name": "Phone",
+    "description": "Limited edition",
+    "price": 353.56,
+    "sellerId": 2,
+    "category": "Electronics",
+    "stock": 17,
+    "dateUpdated": "2025-11-22T16:48:26.795Z"
+  },
+  {
+    "productId": 2,
+    "name": "Phone",
+    "description": "Best performance",
+    "price": 275.46,
+    "sellerId": 29,
+    "category": "Electronics",
+    "stock": 54,
+    "dateUpdated": "2025-11-22T16:48:26.795Z"
+  },
+  {
+    "productId": 3,
+    "name": "Watch",
+    "description": "Latest model",
+    "price": 74.5,
+    "sellerId": 43,
+    "category": "Computers",
+    "stock": 35,
+    "dateUpdated": "2025-11-22T16:48:26.795Z"
+  },
+  {
+    "productId": 4,
+    "name": "excaliberzod",
+    "description": "A sword in a stone (realLife)",
+    "price": 327,
+    "sellerId": 2,
+    "category": "collectible",
+    "stock": 5,
+    "dateUpdated": "2025-11-22T16:48:26.795Z"
+  },
+  {
+    "productId": 5,
+    "name": "Cool Computer",
+    "description": "a very cool computer",
+    "price": 12,
+    "sellerId": 1,
+    "category": "electronics",
+    "stock": 56,
+    "dateUpdated": "2025-11-22T16:48:26.794Z"
+  }
+]
