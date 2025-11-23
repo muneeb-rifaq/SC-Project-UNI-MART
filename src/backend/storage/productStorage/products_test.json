@@ -7,7 +7,7 @@
     "sellerId": 2,
     "category": "Electronics",
     "stock": 17,
-    "dateUpdated": "2025-11-22T16:48:26.795Z"
+    "dateUpdated": "2025-11-23T07:22:06.640Z"
   },
   {
     "productId": 2,
@@ -17,7 +17,7 @@
     "sellerId": 29,
     "category": "Electronics",
     "stock": 54,
-    "dateUpdated": "2025-11-22T16:48:26.795Z"
+    "dateUpdated": "2025-11-23T07:22:06.640Z"
   },
   {
     "productId": 3,
@@ -27,7 +27,7 @@
     "sellerId": 43,
     "category": "Computers",
     "stock": 35,
-    "dateUpdated": "2025-11-22T16:48:26.795Z"
+    "dateUpdated": "2025-11-23T07:22:06.640Z"
   },
   {
     "productId": 4,
@@ -37,7 +37,7 @@
     "sellerId": 2,
     "category": "collectible",
     "stock": 5,
-    "dateUpdated": "2025-11-22T16:48:26.795Z"
+    "dateUpdated": "2025-11-23T07:22:06.640Z"
   },
   {
     "productId": 5,
@@ -45,8 +45,8 @@
     "description": "a very cool computer",
     "price": 12,
     "sellerId": 1,
-    "category": "electronics",
-    "stock": 56,
-    "dateUpdated": "2025-11-22T16:48:26.794Z"
+    "category": "gadgets",
+    "stock": 32,
+    "dateUpdated": "2025-11-23T07:22:06.640Z"
   }
 ]

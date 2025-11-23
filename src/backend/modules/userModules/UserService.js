@@ -13,29 +13,29 @@ class UserService {
       throw new Error("Invalid storage file type. Use .json or .db/.sqlite");
     }
 
-    this.users = this.repository.load();
+    this.Users = this.repository.load();
   }
 
-  // Add a user
-  addUser(user) {
-    const success = this.repository.addUser(user);
-    if (success) this.users.push(user);
+  // Add a User
+  addUser(User) {
+    const success = this.repository.addUser(User);
+    if (success) this.Users.push(User);
   }
 
-  // Delete a user by userId
+  // Delete a User by UserId
   deleteUser(id) {
     const success = this.repository.deleteUser(id);
     if (success) {
-      this.users = this.users.filter((u) => u.getAttribute("userId") !== id);
+      this.Users = this.Users.filter((u) => u.getAttribute("UserId") !== id);
     }
   }
 
-  // Get all users (clone of internal cache)
+  // Get all Users (clone of internal cache)
   getAll() {
-    return [...this.users];
+    return [...this.Users];
   }
 
-  // Change attribute of a user
+  // Change attribute of a User
   changeAttribute(id, attributeName, newValue) {
     const updated = this.repository.changeAttribute(
       id,
@@ -44,31 +44,31 @@ class UserService {
     );
     if (!updated) return null;
 
-    const index = this.users.findIndex((u) => u.getAttribute("userId") === id);
-    if (index !== -1) this.users[index] = updated;
+    const index = this.Users.findIndex((u) => u.getAttribute("UserId") === id);
+    if (index !== -1) this.Users[index] = updated;
 
     return updated;
   }
 
-  // Filter users by attribute and value
+  // Filter Users by attribute and value
   findByAttribute(attributeName, value) {
     if (!User.validateInput(attributeName, value)) return [];
-    return this.users.filter((u) => u.getAttribute(attributeName) === value);
+    return this.Users.filter((u) => u.getAttribute(attributeName) === value);
   }
 
-  // Erase all users
+  // Erase all Users
   eraseAll() {
     const success = this.repository.eraseAll();
-    if (success) this.users = [];
+    if (success) this.Users = [];
   }
 
   // ----------------------------------------------------
   // NEW METHOD 1: Get next available sequential ID (for JSON)
   // ----------------------------------------------------
   getNextAvailableID() {
-    if (this.users.length === 0) return 1;
+    if (this.Users.length === 0) return 1;
 
-    const maxID = Math.max(...this.users.map((u) => u.getAttribute("userId")));
+    const maxID = Math.max(...this.Users.map((u) => u.getAttribute("UserId")));
 
     return maxID + 1;
   }
@@ -82,9 +82,9 @@ class UserService {
   validateID(id) {
     if (typeof id !== "number" || id <= 0) return false;
 
-    if (this.users.length === 0) return true;
+    if (this.Users.length === 0) return true;
 
-    const ids = this.users.map((u) => u.getAttribute("userId"));
+    const ids = this.Users.map((u) => u.getAttribute("UserId"));
     const maxID = Math.max(...ids);
 
     if (id < maxID) return false; // cannot be less than highest assigned ID

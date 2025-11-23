@@ -14,7 +14,9 @@ app.use(bodyParser.json());
 const service = new ProductService(
   "../backend/storage/productStorage/products_test.json"
 );
-
+app.get("/", (req, res) => {
+  res.send("<h1>This is the UNIMART express backend server page</h1>");
+});
 // --------------------------------------------------
 // GET: All Products
 // --------------------------------------------------
