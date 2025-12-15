@@ -1,5 +1,37 @@
 // User.js
 class User {
+  // -------------------------------------------
+  // Attribute metadata (Centralized definitions)
+  // -------------------------------------------
+
+  // List of all attributes
+  // static ATTRIBUTES = [
+  //   "userId",
+  //   "username",
+  //   "email",
+  //   "passwordHash",
+  //   "role",
+  //   "createdAt",
+  //   "updatedAt",
+  //   "lastLogin",
+  // ];
+
+  // Expected validation rules for each attribute
+  static RULES = {
+    userId: (v) => typeof v === "number" && v > 0,
+    username: (v) => typeof v === "string" && v.length > 0,
+    email: (v) => typeof v === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+    passwordHash: (v) => typeof v === "string" && v.length > 0,
+    role: (v) => v === "buyer" || v === "seller" || v === "admin",
+    createdAt: (v) => v === null || typeof v === "string",
+    updatedAt: (v) => v === null || typeof v === "string",
+    lastLogin: (v) => v === null || typeof v === "string",
+  };
+
+  // Which attributes can be modified
+  static MUTABLE = ["username", "email", "passwordHash", "lastLogin"];
+
+  // Private fields
   #userId;
   #username;
   #email;
@@ -9,14 +41,8 @@ class User {
   #updatedAt;
   #lastLogin;
 
-  constructor(
-    userId,
-    username,
-    email,
-    passwordHash,
-    createdAt = null,
-    lastLogin = null
-  ) {
+  //constructor with 5 inputs for simpler creation
+  constructor(userId, username, email, passwordHash, role) {
     if (!User.validateInput("userId", userId))
       throw new Error(`Invalid userId: ${userId}`);
     if (!User.validateInput("username", username))
@@ -25,47 +51,34 @@ class User {
       throw new Error(`Invalid email: ${email}`);
     if (!User.validateInput("passwordHash", passwordHash))
       throw new Error(`Invalid passwordHash`);
+    if (!User.validateInput("role", role)) throw new Error(`Invalid role`);
 
     this.#userId = userId;
     this.#username = username;
     this.#email = email;
     this.#passwordHash = passwordHash;
-    this.#role = "user"; // fixed
-    this.#createdAt = createdAt || new Date().toISOString();
+    this.#role = role;
+    this.#createdAt = new Date().toISOString();
     this.#updatedAt = new Date().toISOString();
-    this.#lastLogin = lastLogin || null;
+    this.#lastLogin = null;
   }
 
   // -----------------------------
-  // Static validation
+  // Centralized validation lookup
   // -----------------------------
   static validateInput(attributeName, value) {
-    switch (attributeName) {
-      case "userId":
-        return typeof value === "number" && value > 0;
-      case "username":
-        return typeof value === "string" && value.length > 0;
-      case "email":
-        return (
-          typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-        );
-      case "passwordHash":
-        return typeof value === "string" && value.length > 0;
-      case "createdAt":
-      case "updatedAt":
-      case "lastLogin":
-        return value === null || typeof value === "string";
-      case "role":
-        return value === "user";
-      default:
-        return false;
-    }
+    const rule = User.RULES[attributeName];
+    return rule ? rule(value) : false;
   }
 
   // -----------------------------
   // Update attribute safely
   // -----------------------------
   updateAttribute(attributeName, newValue) {
+    // Check if attribute is allowed to change
+    if (!User.MUTABLE.includes(attributeName)) return false;
+
+    // Validate value
     if (!User.validateInput(attributeName, newValue)) return false;
 
     switch (attributeName) {
@@ -82,7 +95,7 @@ class User {
         this.#lastLogin = newValue;
         break;
       default:
-        return false; // userId, role, createdAt, updatedAt are immutable
+        return false;
     }
 
     this.#updatedAt = new Date().toISOString();
@@ -132,14 +145,17 @@ class User {
   }
 
   static fromJSON(data) {
-    let u = new User(
+    // FIXED: previous version mistakenly passed timestamps into wrong params
+    const u = new User(
       data.userId,
       data.username,
       data.email,
       data.passwordHash,
-      data.createdAt,
-      data.lastLogin
+      data.role
     );
+    u.#createdAt = data.createdAt;
+    u.#updatedAt = data.updatedAt;
+    u.#lastLogin = data.lastLogin;
     return u;
   }
 }

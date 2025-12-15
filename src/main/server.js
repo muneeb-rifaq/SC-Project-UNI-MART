@@ -1,111 +1,105 @@
+// ------------ Import Modules ------------
 import express from "express";
-import bodyParser from "body-parser";
 import cors from "cors";
+import bodyParser from "body-parser";
 
-import ProductService from "../backend/modules/productModules/ProductService.js";
-import ProductFactory from "../backend/modules/productModules/ProductFactory.js";
+// Import Routes needed for the server
+import DBHandler from "../backend/utils/dbHandler.js";
+import AuthRoutes from "./routes/AuthRoutes.js";
+import BuyerRoutes from "./routes/BuyerRoutes.js";
+import SellerRoutes from "./routes/SellerRoutes.js";
+import AdminRoutes from "./routes/AdminRoutes.js";
 
+// Import Logging Service
+import LoggingService from "../backend/modules/loggingModules/LoggingService.js";
+
+// ------------ Initialize DB ------------
+try {
+  DBHandler.initialize();
+} catch (err) {
+  console.error("Server stopped due to DB error.");
+  process.exit(1);
+}
+
+// ------------ Initialize Logging Service ------------
+const loggingService = new LoggingService();
+
+// ------------ Initialize Server ------------
 const app = express();
 const PORT = 3000;
 
+// ------------ Middleware ------------
 app.use(cors());
 app.use(bodyParser.json());
 
-const service = new ProductService(
-  "../backend/storage/productStorage/products_test.json"
-);
-app.get("/", (req, res) => {
-  res.send("<h1>This is the UNIMART express backend server page</h1>");
-});
-// --------------------------------------------------
-// GET: All Products
-// --------------------------------------------------
-app.get("/api/products", (req, res) => {
-  const products = service.getAll();
-  console.log(`GET: ProductList: SUCCESS (Total: ${products.length})`);
-  res.json(products.map((p) => p.toJSON()));
-});
+// ------------ Logging Middleware ------------
+app.use((req, res, next) => {
+  // Only log CREATE, UPDATE, DELETE operations (not GET)
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
+    // Map HTTP methods to operation types
+    const operationMap = {
+      POST: "CREATE",
+      PUT: "UPDATE",
+      PATCH: "UPDATE",
+      DELETE: "DELETE",
+    };
 
-// --------------------------------------------------
-// POST: Add New Product
-// --------------------------------------------------
-app.post("/api/products", (req, res) => {
-  const { name, description, price, sellerId, category, stock } = req.body;
+    const operationType = operationMap[req.method];
 
-  const id = service.getNextAvailableID();
+    // Extract resource name from URL path, ignoring :id parameters
+    // e.g., /api/buyer/products/:id -> products, /api/admin/users -> users
+    const pathParts = req.path
+      .split("/")
+      .filter((p) => p && !p.startsWith(":"));
 
-  const product = ProductFactory.makeProduct(
-    id,
-    name,
-    description,
-    Number(price),
-    Number(sellerId),
-    category,
-    Number(stock)
-  );
+    // Get the last non-numeric part (table name)
+    let tableName = "unknown";
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      // Skip numeric IDs and common keywords
+      if (
+        !/^\d+$/.test(pathParts[i]) &&
+        !["api", "admin", "buyer", "seller"].includes(pathParts[i])
+      ) {
+        tableName = pathParts[i];
+        break;
+      }
+    }
 
-  service.addProduct(product);
+    // Get user email from header (most routes) or body (login route)
+    const performedBy =
+      req.headers["x-user-email"] || req.body?.email || "anonymous";
 
-  console.log(
-    `POST: /api/products: SUCCESS (Added productId: ${product.productId})`
-  );
+    // Create description with method, path, and optional resource info
+    const description = `${req.method} ${req.path}`;
 
-  res.json({ success: true, product: product.toJSON() });
-});
-
-// --------------------------------------------------
-// PUT: Update Attribute
-// --------------------------------------------------
-app.put("/api/products/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const updates = req.body;
-
-  const failed = [];
-  const succeeded = [];
-
-  for (const [attribute, value] of Object.entries(updates)) {
-    const result = service.changeAttribute(id, attribute, value);
-    result ? succeeded.push(attribute) : failed.push(attribute);
+    // Log the operation
+    try {
+      loggingService.addLog(tableName, operationType, performedBy, description);
+    } catch (err) {
+      console.error("Logging error:", err.message);
+    }
   }
 
-  const updatedProduct = service.findByAttribute("productId", id)[0] || null;
-
-  const response = {
-    success: failed.length === 0,
-    message:
-      failed.length === 0
-        ? "Product updated successfully"
-        : `Update failed in: ${failed.join(", ")}`,
-    updatedAttributes: succeeded,
-    failedAttributes: failed,
-    product: updatedProduct ? updatedProduct.toJSON() : null,
-  };
-
-  console.log(
-    `PUT: /api/products/${id}: ${response.success ? "SUCCESS" : "FAILED"}${
-      succeeded.length ? ` (Updated: ${succeeded.join(", ")})` : ""
-    }`
-  );
-
-  return res.json(response);
+  next();
 });
 
-// --------------------------------------------------
-// DELETE: Delete One Product
-// --------------------------------------------------
-app.delete("/api/products/:id", (req, res) => {
-  const id = Number(req.params.id);
-
-  const success = service.deleteProduct(id);
-
-  console.log(`DELETE: /api/products/${id}: ${success ? "SUCCESS" : "FAILED"}`);
-
-  res.json({ success });
+// ------------ Home Page ------------
+app.get("/", (req, res) => {
+  res.send("<h1>UNIMART Backend Server Running</h1>");
 });
 
-// --------------------------------------------------
-// START SERVER
-// --------------------------------------------------
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// ------------ API Routes ------------
+app.use("/api/login", AuthRoutes);
+app.use("/api/buyer", BuyerRoutes);
+app.use("/api/seller", SellerRoutes);
+app.use("/api/admin", AdminRoutes);
+
+// ------------ Start Server Only If Not Testing ------------
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+  });
+}
+
+// ------------ Export App for Integration Tests ------------
+export default app;

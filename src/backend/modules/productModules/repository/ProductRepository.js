@@ -30,6 +30,9 @@ class ProductRepository {
   eraseAll() {
     throw new Error("eraseAll() must be implemented by subclass");
   }
+  getHighestID() {
+    throw new Error("getHighestID() must be implemented by subclass");
+  }
 }
 
 export default ProductRepository;

@@ -1,0 +1,43 @@
+/* ============================================================================
+   CategoryCard.css - Category Card Styles
+   ============================================================================ */
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+}
+
+.category-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.category-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0.5rem 0;
+}
+
+.category-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  flex-grow: 1;
+}
+
+.category-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  width: 100%;
+}
+
+.category-actions button {
+  flex: 1;
+}

@@ -1,96 +1,136 @@
-// UserService.js
+import path from "path";
+import { fileURLToPath } from "url";
+
 import User from "./User.js";
 import UserSQLRepository from "./repository/UserSQLRepository.js";
 import UserJSONRepository from "./repository/UserJSONRepository.js";
+import UserFactory from "./UserFactory.js";
 
 class UserService {
-  constructor(filePath) {
+  #users;
+  #repository;
+
+  constructor(filePath = null) {
+    // -----------------------------------------
+    // Proper default path resolution (same as ProductService)
+    // -----------------------------------------
+    if (!filePath) {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+
+      filePath = path.resolve(
+        __dirname,
+        "../../storage/DBStorage/unimartDB.db"
+      );
+    }
+
+    if (typeof filePath !== "string")
+      throw new Error("filePath must be a string");
+
+    // -----------------------------------------
+    // Pick repository type
+    // -----------------------------------------
     if (filePath.endsWith(".json")) {
-      this.repository = new UserJSONRepository(filePath);
+      this.#repository = new UserJSONRepository(filePath);
     } else if (filePath.endsWith(".db") || filePath.endsWith(".sqlite")) {
-      this.repository = new UserSQLRepository(filePath);
+      this.#repository = new UserSQLRepository(filePath);
     } else {
-      throw new Error("Invalid storage file type. Use .json or .db/.sqlite");
+      throw new Error("Invalid storage file type");
     }
 
-    this.Users = this.repository.load();
-  }
-
-  // Add a User
-  addUser(User) {
-    const success = this.repository.addUser(User);
-    if (success) this.Users.push(User);
-  }
-
-  // Delete a User by UserId
-  deleteUser(id) {
-    const success = this.repository.deleteUser(id);
-    if (success) {
-      this.Users = this.Users.filter((u) => u.getAttribute("UserId") !== id);
+    // -----------------------------------------
+    // Load existing users
+    // -----------------------------------------
+    try {
+      this.#users = this.#repository.load() || [];
+    } catch {
+      this.#users = [];
     }
   }
 
-  // Get all Users (clone of internal cache)
   getAll() {
-    return [...this.Users];
+    return this.#users.map((u) => User.fromJSON(u.toJSON()));
   }
 
-  // Change attribute of a User
-  changeAttribute(id, attributeName, newValue) {
-    const updated = this.repository.changeAttribute(
-      id,
-      attributeName,
-      newValue
-    );
+  // -----------------------------------------
+  // Add user via factory using next available ID
+  // -----------------------------------------
+  async addUser(username, email, passwordHash, role) {
+    if (!username || !email || !passwordHash)
+      throw new Error("username, email, passwordHash required");
+
+    const id = this.getNextAvailableID();
+
+    let user;
+    try {
+      user = await UserFactory.createNewUser(
+        id,
+        username,
+        email,
+        passwordHash,
+        role
+      );
+    } catch (err) {
+      console.error("UserFactory.createNewUser failed:", err);
+      return null;
+    }
+
+    const returnUser = this.#repository.addUser(user);
+    if (!returnUser) return null;
+
+    this.#users.push(returnUser);
+    return returnUser;
+  }
+
+  deleteUser(id) {
+    if (typeof id !== "number" || id <= 0) return false;
+
+    const ok = this.#repository.deleteUser(id);
+    if (!ok) return false;
+
+    this.#users = this.#users.filter((u) => u.getAttribute("userId") !== id);
+    return true;
+  }
+
+  updateAttribute(id, attr, val) {
+    if (!attr || typeof id !== "number" || id <= 0) return null;
+
+    const updated = this.#repository.updateAttribute(id, attr, val);
     if (!updated) return null;
 
-    const index = this.Users.findIndex((u) => u.getAttribute("UserId") === id);
-    if (index !== -1) this.Users[index] = updated;
+    const idx = this.#users.findIndex((u) => u.getAttribute("userId") === id);
+
+    if (idx >= 0) this.#users[idx] = updated;
+    else this.#users.push(updated);
 
     return updated;
   }
 
-  // Filter Users by attribute and value
-  findByAttribute(attributeName, value) {
-    if (!User.validateInput(attributeName, value)) return [];
-    return this.Users.filter((u) => u.getAttribute(attributeName) === value);
+  findByAttribute(attr, val) {
+    if (!attr) return [];
+    return this.getAll().filter((u) => u.getAttribute(attr) === val);
   }
 
-  // Erase all Users
   eraseAll() {
-    const success = this.repository.eraseAll();
-    if (success) this.Users = [];
-  }
+    const ok = this.#repository.eraseAll();
+    if (!ok) return false;
 
-  // ----------------------------------------------------
-  // NEW METHOD 1: Get next available sequential ID (for JSON)
-  // ----------------------------------------------------
-  getNextAvailableID() {
-    if (this.Users.length === 0) return 1;
-
-    const maxID = Math.max(...this.Users.map((u) => u.getAttribute("UserId")));
-
-    return maxID + 1;
-  }
-
-  // ----------------------------------------------------
-  // NEW METHOD 2: Validate a given ID
-  // Rules:
-  // - must not match any existing ID
-  // - must not be less than the highest ID in the list
-  // ----------------------------------------------------
-  validateID(id) {
-    if (typeof id !== "number" || id <= 0) return false;
-
-    if (this.Users.length === 0) return true;
-
-    const ids = this.Users.map((u) => u.getAttribute("UserId"));
-    const maxID = Math.max(...ids);
-
-    if (id < maxID) return false; // cannot be less than highest assigned ID
-    if (ids.includes(id)) return false; // cannot already exist
-
+    this.#users = [];
     return true;
+  }
+
+  // -----------------------------------------
+  // Get next available sequential ID
+  // -----------------------------------------
+  getNextAvailableID() {
+    const highest = this.#repository.getHighestID();
+    if (highest) return highest + 1;
+
+    const maxId = this.#users.reduce(
+      (max, u) => Math.max(max, u.getAttribute("userId")),
+      0
+    );
+    return maxId + 1;
   }
 }
 

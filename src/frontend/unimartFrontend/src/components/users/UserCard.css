@@ -1,0 +1,58 @@
+/* ============================================================================
+   UserCard.css - User Card Styles
+   ============================================================================ */
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.user-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.user-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0.5rem 0;
+}
+
+.user-email {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.user-role {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.user-role-admin {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.user-role-seller {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.user-role-buyer {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.user-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  width: 100%;
+}

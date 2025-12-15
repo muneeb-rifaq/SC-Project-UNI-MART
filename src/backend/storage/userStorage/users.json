@@ -1,0 +1,32 @@
+[
+  {
+    "userId": 1,
+    "username": "bob_jones",
+    "email": "bob_jones@mail.com",
+    "passwordHash": "$2b$10$Rp9APRp3YbkL63C7LkipT.Ux7YOPcfmbNluphIG1/hIpybXrFyZsq",
+    "role": "user",
+    "createdAt": "2025-11-23T13:45:32.024Z",
+    "updatedAt": "2025-11-23T13:45:32.026Z",
+    "lastLogin": null
+  },
+  {
+    "userId": 2,
+    "username": "alice_smith",
+    "email": "alice_smith@mail.com",
+    "passwordHash": "$2b$10$4lIoLoeSzwNjNSKvdIo.ge.TgbEgxh5qjwQCsslqp269k9xJhKtSm",
+    "role": "user",
+    "createdAt": "2025-11-23T13:45:32.224Z",
+    "updatedAt": "2025-11-23T13:45:32.225Z",
+    "lastLogin": null
+  },
+  {
+    "userId": 3,
+    "username": "eve_williams",
+    "email": "eve_williams@test.org",
+    "passwordHash": "$2b$10$X2d7kU8WSTwPrYIrtTGR2.oBZB5fJ4Coy9tTxvIgBCO9hZWgxQN8m",
+    "role": "user",
+    "createdAt": "2025-11-23T13:45:32.423Z",
+    "updatedAt": "2025-11-23T13:45:32.423Z",
+    "lastLogin": null
+  }
+]

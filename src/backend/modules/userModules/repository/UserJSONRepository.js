@@ -1,26 +1,21 @@
 // UserJSONRepository.js
 import fs from "fs";
 import User from "../User.js";
-import UserFactory from "../UserFactory.js";
 import UserRepository from "./UserRepository.js";
 
-class UserJSONRepository extends UserRepository {
-  constructor(filePath) {
-    super(filePath);
-    this.initializeFileIfMissing();
-  }
+export default class UserJSONRepository extends UserRepository {
+  constructor(path) {
+    super(path);
 
-  initializeFileIfMissing() {
-    if (!fs.existsSync(this.filePath)) {
-      const sampleUsers = [
-        UserFactory.makeSampleUser(1),
-        UserFactory.makeSampleUser(2),
-        UserFactory.makeSampleUser(3),
-      ];
+    // Initialize file if missing
+    if (!fs.existsSync(path)) {
       fs.writeFileSync(
-        this.filePath,
+        path,
         JSON.stringify(
-          sampleUsers.map((u) => u.toJSON()),
+          {
+            lastId: 0,
+            users: [],
+          },
           null,
           2
         )
@@ -28,53 +23,124 @@ class UserJSONRepository extends UserRepository {
     }
   }
 
+  //------------------------------------------
+  // INTERNAL UTILITIES
+  //------------------------------------------
+  _readFile() {
+    return JSON.parse(fs.readFileSync(this.path, "utf8"));
+  }
+
+  _writeFile(data) {
+    fs.writeFileSync(this.path, JSON.stringify(data, null, 2));
+  }
+
+  //------------------------------------------
+  // Load → return array of User instances
+  //------------------------------------------
   load() {
-    if (!fs.existsSync(this.filePath)) return [];
-    const raw = fs.readFileSync(this.filePath, "utf8");
-    return JSON.parse(raw).map((obj) => User.fromJSON(obj));
+    const data = this._readFile();
+    return data.users.map((obj) => User.fromJSON(obj));
   }
 
-  save(users) {
-    try {
-      fs.writeFileSync(
-        this.filePath,
-        JSON.stringify(
-          users.map((u) => u.toJSON()),
-          null,
-          2
-        )
+  //------------------------------------------
+  // Add user with AUTOINCREMENT behavior
+  //------------------------------------------
+  addUser(userInstance) {
+    const data = this._readFile();
+
+    const expectedId = data.lastId + 1;
+    const givenId = userInstance.getAttribute("userId");
+
+    if (givenId !== expectedId) {
+      throw new Error(
+        `UserJSONRepository.addUser: userId must be ${expectedId}, received ${givenId}`
       );
-      return true;
-    } catch {
-      return false;
     }
+
+    // Store updated lastId
+    data.lastId = expectedId;
+
+    // Save user JSON
+    data.users.push(userInstance.toJSON());
+
+    this._writeFile(data);
+    return userInstance; // return passed instance (same behavior as SQL repo)
   }
 
-  addUser(user) {
-    const users = this.load();
-    users.push(user);
-    return this.save(users) ? user : null;
-  }
-
+  //------------------------------------------
+  // Delete user by ID
+  //------------------------------------------
   deleteUser(id) {
-    let users = this.load();
-    const before = users.length;
-    users = users.filter((u) => u.getAttribute("userId") !== id);
-    return this.save(users) && users.length !== before;
+    const data = this._readFile();
+    const before = data.users.length;
+
+    data.users = data.users.filter((u) => u.userId !== id);
+
+    this._writeFile(data);
+
+    return data.users.length !== before;
   }
 
-  changeAttribute(id, attributeName, newValue) {
-    const users = this.load();
-    const user = users.find((u) => u.getAttribute("userId") === id);
+  //------------------------------------------
+  // Change attribute (allowed list only)
+  //------------------------------------------
+  updateAttribute(id, attr, val) {
+    const allowed = new Set([
+      "username",
+      "email",
+      "passwordHash",
+      "role",
+      "lastLogin",
+    ]);
 
-    if (!user || !user.updateAttribute(attributeName, newValue)) return null;
+    if (!allowed.has(attr)) {
+      console.warn(
+        `UserJSONRepository.changeAttribute: attribute "${attr}" not allowed.`
+      );
+      return null;
+    }
 
-    return this.save(users) ? user : null;
+    const data = this._readFile();
+    const user = data.users.find((u) => u.userId === id);
+    if (!user) return null;
+
+    // Update value
+    user[attr] = val;
+    user.updatedAt = new Date().toISOString();
+
+    this._writeFile(data);
+
+    return User.fromJSON(user);
   }
 
+  //------------------------------------------
+  // Save (overwrite all users) — keep lastId!
+  //------------------------------------------
+  // save(users) {
+  //   const data = this._readFile();
+
+  //   data.users = users.map((u) => u.toJSON());
+
+  //   this._writeFile(data);
+  //   return true;
+  // }
+
+  //------------------------------------------
+  // Erase all users — BUT KEEP lastId!!
+  //------------------------------------------
   eraseAll() {
-    return this.save([]);
+    const data = this._readFile();
+    data.users = [];
+    // leave data.lastId untouched (autoincrement never resets)
+    this._writeFile(data);
+    return true;
+  }
+
+  //------------------------------------------
+  // Return last used ID (NOT highest existing)
+  //------------------------------------------
+  getHighestID() {
+    const data = this._readFile();
+    return data.lastId;
   }
 }
-
-export default UserJSONRepository;

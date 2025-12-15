@@ -17,6 +17,8 @@
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.4.6",
     "body-parser": "^2.2.0",
+    "chai": "^6.2.1",
+    "chai-http": "^5.1.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "open": "^11.0.0"

@@ -1,144 +1,154 @@
 // UserSQLRepository.js
 import Database from "better-sqlite3";
 import User from "../User.js";
-import UserFactory from "../UserFactory.js";
 import UserRepository from "./UserRepository.js";
+
+const SCHEMA = `
+CREATE TABLE IF NOT EXISTS users (
+  userId INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT,
+  email TEXT UNIQUE,
+  passwordHash TEXT,
+  role TEXT,
+  createdAt TEXT,
+  updatedAt TEXT,
+  lastLogin TEXT
+);
+`;
 
 class UserSQLRepository extends UserRepository {
   constructor(dbPath) {
     super(dbPath);
     this.db = new Database(dbPath);
 
-    this.initializeTable();
-    // this.initializeSampleRows();
+    // Ensure table exists
+    this.db.prepare(SCHEMA).run();
+
+    // Prepared statements
+    this._selectAllStmt = this.db.prepare("SELECT * FROM users");
+    this._selectByIdStmt = this.db.prepare(
+      "SELECT * FROM users WHERE userId = ?"
+    );
+    this._deleteStmt = this.db.prepare("DELETE FROM users WHERE userId = ?");
   }
 
-  initializeTable() {
-    this.db
-      .prepare(
-        `
-      CREATE TABLE IF NOT EXISTS users (
-        userId INTEGER PRIMARY KEY,
-        username TEXT,
-        email TEXT,
-        passwordHash TEXT,
-        role TEXT,
-        lastLogin TEXT
-      )
-    `
-      )
-      .run();
-  }
-
-  initializeSampleRows() {
-    const count = this.db.prepare("SELECT COUNT(*) AS c FROM users").get().c;
-
-    if (count === 0) {
-      const sample = [
-        UserFactory.makeSampleUser(1),
-        UserFactory.makeSampleUser(2),
-        UserFactory.makeSampleUser(3),
-      ];
-
-      const insert = this.db.prepare(`
-        INSERT INTO users (userId, username, email, passwordHash, role, lastLogin)
-        VALUES (?, ?, ?, ?, ?, ?)
-      `);
-
-      for (const u of sample) {
-        const obj = u.toJSON();
-        insert.run(
-          obj.userId,
-          obj.username,
-          obj.email,
-          obj.passwordHash,
-          obj.role,
-          obj.lastLogin
-        );
-      }
-    }
-  }
-
+  // Load all users (returns array of User instances)
   load() {
-    const rows = this.db.prepare("SELECT * FROM users").all();
+    const rows = this._selectAllStmt.all();
     return rows.map((r) => User.fromJSON(r));
   }
 
-  save(users) {
-    const deleteAll = this.db.prepare("DELETE FROM users");
-    const insert = this.db.prepare(`
-      INSERT INTO users (userId, username, email, passwordHash, role, lastLogin)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `);
-
-    const tx = this.db.transaction((list) => {
-      deleteAll.run();
-      for (const u of list) {
-        const obj = u.toJSON();
-        insert.run(
-          obj.userId,
-          obj.username,
-          obj.email,
-          obj.passwordHash,
-          obj.role,
-          obj.lastLogin
-        );
-      }
-    });
-
-    try {
-      tx(users);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
+  // Add a single user, userId auto-generated
   addUser(user) {
     const obj = user.toJSON();
-    const insert = this.db.prepare(`
-      INSERT INTO users (userId, username, email, passwordHash, role, lastLogin)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `);
 
     try {
-      insert.run(
-        obj.userId,
+      const stmt = this.db.prepare(
+        `INSERT INTO users (username, email, passwordHash, role, createdAt, updatedAt, lastLogin)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      );
+
+      if (user.getAttribute("userId") != this.getHighestID() + 1) {
+        throw new Error(
+          "UserSQLRepository.addUser: userId is incorrectly set. It should be omitted or set to next available ID."
+        );
+      }
+
+      const result = stmt.run(
         obj.username,
         obj.email,
         obj.passwordHash,
         obj.role,
+        obj.createdAt,
+        obj.updatedAt,
         obj.lastLogin
       );
-      return user;
-    } catch {
+
+      // Create a new immutable User instance with the auto-generated ID
+      const newUser = User.fromJSON({ ...obj, userId: result.lastInsertRowid });
+      return newUser;
+    } catch (err) {
+      console.error("UserSQLRepository.addUser error:", err.message);
       return null;
     }
   }
 
+  // Delete user by ID -> returns boolean
   deleteUser(id) {
-    const stmt = this.db.prepare("DELETE FROM users WHERE userId = ?");
-    return stmt.run(id).changes > 0;
+    try {
+      const result = this._deleteStmt.run(id);
+      return result.changes > 0;
+    } catch (err) {
+      console.error("UserSQLRepository.deleteUser error:", err);
+      return false;
+    }
   }
 
-  changeAttribute(id, attributeName, newValue) {
-    const users = this.load();
-    const u = users.find((x) => x.getAttribute("userId") === id);
-    if (!u) return null;
+  // Change attribute safely -> returns updated User instance or null
+  updateAttribute(id, attributeName, newValue) {
+    const allowed = new Set([
+      "username",
+      "email",
+      "passwordHash",
+      "role",
+      "lastLogin",
+    ]);
 
-    const updated = u.updateAttribute(attributeName, newValue);
-    if (!updated) return null;
+    console.log(
+      `🔍 UserSQLRepository.updateAttribute: id=${id}, attr="${attributeName}", value="${newValue}"`
+    );
 
-    return this.save(users) ? u : null;
+    if (!allowed.has(attributeName)) {
+      console.warn(
+        `⚠️ UserSQLRepository.updateAttribute: attribute "${attributeName}" not in allowed set:`,
+        Array.from(allowed)
+      );
+      return null;
+    }
+
+    try {
+      const updatedAt = new Date().toISOString();
+      const sql = `UPDATE users SET ${attributeName} = ?, updatedAt = ? WHERE userId = ?`;
+      console.log(
+        `🔍 Executing SQL: ${sql} with values [${newValue}, ${updatedAt}, ${id}]`
+      );
+      const stmt = this.db.prepare(sql);
+      const result = stmt.run(newValue, updatedAt, id);
+      console.log(`🔍 Update result: changes=${result.changes}`);
+
+      if (result.changes === 0) {
+        console.warn(`⚠️ No rows updated for user ${id}`);
+        return null;
+      }
+
+      const row = this._selectByIdStmt.get(id);
+      console.log(`✅ User ${id} updated successfully`);
+      return row ? User.fromJSON(row) : null;
+    } catch (err) {
+      console.error("❌ UserSQLRepository.updateAttribute error:", err);
+      console.error("   Error details:", err.message);
+      console.error("   Stack:", err.stack);
+      return null;
+    }
   }
 
+  // Erase all users
   eraseAll() {
     try {
       this.db.prepare("DELETE FROM users").run();
       return true;
-    } catch {
+    } catch (err) {
+      console.error("UserSQLRepository.eraseAll error:", err);
       return false;
     }
+  }
+
+  // Returns the last auto-generated userId, or 0 if table is empty
+  getHighestID() {
+    const row = this.db
+      .prepare("SELECT seq FROM sqlite_sequence WHERE name = 'users'")
+      .get();
+    return row?.seq || 0; // use seq, not maxId
   }
 }
 

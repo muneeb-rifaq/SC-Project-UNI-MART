@@ -1,0 +1,153 @@
+/* ============================================================================
+   ProductDetails.css - Product Details Styles
+   ============================================================================ */
+
+.product-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.product-details-image {
+  font-size: 6rem;
+  text-align: center;
+  padding: 3rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 8px;
+}
+
+.product-details-section {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.product-details-section:last-child {
+  border-bottom: none;
+}
+
+.product-details-section h3 {
+  margin: 0 0 0.75rem 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.product-details-section p {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+.product-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+}
+
+.product-details-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #28a745;
+  margin-top: 0.5rem;
+}
+
+.stock-available {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.stock-unavailable {
+  color: #dc3545;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.product-details-category {
+  background-color: #e9ecef;
+  padding: 0.75rem;
+  border-radius: 6px;
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.product-id {
+  font-family: monospace;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Seller Information Styles */
+.seller-info-card {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.seller-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.seller-info-row:last-child {
+  border-bottom: none;
+}
+
+.seller-info-label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.seller-info-value {
+  color: #333;
+  font-size: 0.95rem;
+  text-align: right;
+}
+
+.seller-loading {
+  color: #666;
+  font-style: italic;
+  padding: 0.5rem;
+}
+
+.seller-info-error {
+  color: #dc3545;
+  font-style: italic;
+  padding: 0.5rem;
+}
+
+/* Purchase Section Styles */
+.purchase-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.quantity-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+
+.quantity-input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+  opacity: 1;
+}

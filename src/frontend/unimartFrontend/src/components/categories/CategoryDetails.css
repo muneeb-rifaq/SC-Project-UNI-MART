@@ -1,0 +1,91 @@
+/* ============================================================================
+   CategoryDetails.css - Category Details Modal Styles
+   ============================================================================ */
+
+.category-details {
+  padding: 1rem 0;
+}
+
+.category-details-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.category-details-icon {
+  font-size: 3rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.category-details-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.category-details-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.category-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.category-detail-row:hover {
+  background-color: #e9ecef;
+}
+
+.category-detail-label {
+  font-weight: 600;
+  color: #555;
+  font-size: 1.1rem;
+  min-width: 150px;
+}
+
+.category-detail-value {
+  flex: 1;
+  text-align: right;
+  color: #333;
+  font-size: 1.1rem;
+  word-wrap: break-word;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .category-details-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .category-detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .category-detail-label {
+    min-width: unset;
+  }
+
+  .category-detail-value {
+    text-align: left;
+  }
+}

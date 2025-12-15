@@ -1,107 +1,92 @@
-// ProductService.js
+import path from "path";
+import { fileURLToPath } from "url";
+
 import Product from "./Product.js";
-//import repositories
-// import ProductRepository from "./repository/ProductRepository.js";
+import ProductFactory from "./ProductFactory.js";
 import ProductSQLRepository from "./repository/ProductSQLRepository.js";
-import ProductJSONRepository from "./repository/productJSONRepository.js";
+import ProductJSONRepository from "./repository/ProductJSONRepository.js";
 
 class ProductService {
-  constructor(filePath) {
-    if (filePath.endsWith(".json")) {
-      this.repository = new ProductJSONRepository(filePath);
-    } else if (filePath.endsWith(".db") || filePath.endsWith(".sqlite")) {
-      this.repository = new ProductSQLRepository(filePath);
-    } else {
-      throw new Error("Invalid storage file type. Use .json or .db/.sqlite");
-    }
+  #repository;
 
-    this.products = this.repository.load();
-  }
+  constructor(filePath = null) {
+    // ---------------------------
+    // Resolve default file path
+    // ---------------------------
+    if (!filePath) {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
 
-  // Add a product
-  addProduct(product) {
-    const success = this.repository.addProduct(product);
-    if (success) this.products.push(product);
-  }
-
-  // Delete a product by productId
-  deleteProduct(id) {
-    const success = this.repository.deleteProduct(id);
-    if (success) {
-      this.products = this.products.filter(
-        (p) => p.getAttribute("productId") !== id
+      // Default DB location
+      filePath = path.resolve(
+        __dirname,
+        "../../storage/DBStorage/unimartDB.db"
       );
     }
+
+    if (typeof filePath !== "string")
+      throw new Error("filePath must be a string");
+
+    // ---------------------------
+    // Select repository based on file extension
+    // ---------------------------
+    if (filePath.endsWith(".json"))
+      this.#repository = new ProductJSONRepository(filePath);
+    else if (filePath.endsWith(".db") || filePath.endsWith(".sqlite"))
+      this.#repository = new ProductSQLRepository(filePath);
+    else throw new Error("Invalid storage file type: must be JSON or SQLite");
   }
 
-  // Get all products (clone of internal cache)
   getAll() {
-    return [...this.products];
+    return this.#repository.load().map((p) => Product.fromJSON(p.toJSON()));
   }
 
-  // Change attribute of a product
-  changeAttribute(id, attributeName, newValue) {
-    const updated = this.repository.changeAttribute(
+  // -----------------------------------------
+  // ADD PRODUCT with categoryId SUPPORT
+  // -----------------------------------------
+  async addProduct(name, sellerId, description, price, stock, categoryId) {
+    if (!name || typeof price !== "number" || typeof sellerId !== "number")
+      throw new Error("name, price, and sellerId required");
+
+    if (typeof categoryId !== "number" || categoryId <= 0)
+      throw new Error("Valid categoryId required");
+
+    const id = this.getNextAvailableID();
+
+    const product = ProductFactory.makeProduct(
       id,
-      attributeName,
-      newValue
-    );
-    if (!updated) return null;
-
-    const index = this.products.findIndex(
-      (p) => p.getAttribute("productId") === id
-    );
-    if (index !== -1) this.products[index] = updated;
-
-    return updated;
-  }
-
-  // Filter products by attribute and value
-  findByAttribute(attributeName, value) {
-    if (!Product.validateInput(attributeName, value)) return [];
-    return this.products.filter((p) => p.getAttribute(attributeName) === value);
-  }
-
-  // Erase all products
-  eraseAll() {
-    const success = this.repository.eraseAll();
-    if (success) this.products = [];
-  }
-
-  // ----------------------------------------------------
-  // NEW METHOD 1: Get next available sequential ID
-  // ----------------------------------------------------
-  getNextAvailableID() {
-    if (this.products.length === 0) return 1;
-
-    const maxID = Math.max(
-      ...this.products.map((p) => p.getAttribute("productId"))
+      sellerId,
+      name,
+      description,
+      price,
+      stock,
+      categoryId // NEW
     );
 
-    return maxID + 1;
+    return this.#repository.addProduct(product);
   }
 
-  // ----------------------------------------------------
-  // NEW METHOD 2: Validate a given ID
-  // Rules:
-  // - must not match any existing ID
-  // - must not be less than the highest ID in the list
-  // ----------------------------------------------------
-  validateID(id) {
+  deleteProduct(id) {
     if (typeof id !== "number" || id <= 0) return false;
+    return this.#repository.deleteProduct(id);
+  }
 
-    if (this.products.length === 0) return true;
+  updateAttribute(id, attribute, value) {
+    if (!attribute || typeof id !== "number" || id <= 0) return null;
+    return this.#repository.updateAttribute(id, attribute, value);
+  }
 
-    const ids = this.products.map((p) => p.getAttribute("productId"));
-    const maxID = Math.max(...ids);
+  findByAttribute(attribute, value) {
+    if (!attribute) return [];
+    return this.getAll().filter((p) => p.getAttribute(attribute) === value);
+  }
 
-    // id cannot be less than highest assigned ID
-    if (id < maxID) return false;
+  eraseAll() {
+    return this.#repository.eraseAll();
+  }
 
-    // id cannot already exist
-    if (ids.includes(id)) return false;
-
-    return true;
+  getNextAvailableID() {
+    return this.#repository.getHighestID() + 1;
   }
 }
 
