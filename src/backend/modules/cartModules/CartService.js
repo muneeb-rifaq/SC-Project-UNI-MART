@@ -3,10 +3,18 @@
 import Cart from "./Cart.js";
 import CartFactory from "./CartFactory.js";
 
+/**
+ * CartService class
+ * Manages the lifecycle and operations of shopping carts.
+ * Handles creation, retrieval, and modification of carts.
+ */
 class CartService {
   #carts;
   #factory;
 
+  /**
+   * Initializes the CartService.
+   */
   constructor() {
     this.#carts = [];
     this.#factory = new CartFactory();
@@ -15,6 +23,11 @@ class CartService {
   // --------------------------
   // Get cart for a user
   // --------------------------
+  /**
+   * Retrieves the cart for a specific user.
+   * @param {number} userId - The ID of the user
+   * @returns {Cart|null} The user's cart or null if not found
+   */
   getCartByUser(userId) {
     return this.#carts.find((c) => c.getAttribute("userId") === userId) || null;
   }
@@ -22,6 +35,11 @@ class CartService {
   // --------------------------
   // Create new cart
   // --------------------------
+  /**
+   * Creates a new cart for a user if one doesn't exist.
+   * @param {number} userId - The ID of the user
+   * @returns {Cart|null} The new or existing cart
+   */
   createCart(userId) {
     const existing = this.getCartByUser(userId);
     if (existing) return existing;

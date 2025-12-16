@@ -1,16 +1,20 @@
 import Product from "./Product.js";
 
+/**
+ * Factory class for creating Product instances.
+ * Provides methods to create standard and sample products.
+ */
 class ProductFactory {
   /**
    * Creates a new Product instance.
-   * @param {number} productId
-   * @param {number} sellerId
-   * @param {string} name
-   * @param {string} description
-   * @param {number} price
-   * @param {number} stock
-   * @param {number} categoryId
-   * @returns {Product}
+   * @param {number} productId - Unique identifier for the product.
+   * @param {number} sellerId - ID of the seller.
+   * @param {string} name - Name of the product.
+   * @param {string} description - Description of the product.
+   * @param {number} price - Price of the product.
+   * @param {number} stock - Available stock quantity.
+   * @param {number} categoryId - ID of the category.
+   * @returns {Product} A new Product instance.
    */
   static makeProduct(
     productId,
@@ -33,9 +37,9 @@ class ProductFactory {
   }
 
   /**
-   * Create a sample Product with randomized values for testing
-   * @param {number} id - product ID
-   * @returns {Product}
+   * Create a sample Product with randomized values for testing.
+   * @param {number} id - Product ID to use.
+   * @returns {Product} A sample Product instance with random data.
    */
   static makeSampleProduct(id) {
     const randomId = id;

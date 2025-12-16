@@ -25,7 +25,10 @@ class UserController {
   static async addUser(req, res) {
     console.log("🔍 UserController.addUser called with body:", req.body);
     try {
-      const { name, email, passwordHash, role } = req.body;
+      // Accept both name/username and password/passwordHash
+      const name = req.body.name || req.body.username;
+      const passwordHash = req.body.passwordHash || req.body.password;
+      const { email, role } = req.body;
 
       if (!name || !email || !passwordHash || !role) {
         console.warn("⚠️ Missing required user fields");

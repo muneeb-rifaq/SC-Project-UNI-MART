@@ -6,10 +6,20 @@ import CategoryFactory from "./CategoryFactory.js";
 import CategorySQLRepository from "./repository/CategorySQLRepository.js";
 import CategoryJSONRepository from "./repository/CategoryJSONRepository.js";
 
+/**
+ * CategoryService class
+ * Manages the lifecycle and operations of product categories.
+ * Handles persistence via repositories (SQL or JSON).
+ */
 class CategoryService {
   #categories;
   #repository;
 
+  /**
+   * Initializes the CategoryService.
+   * @param {string} [filePath] - Path to the storage file (DB or JSON). Defaults to unimartDB.db
+   * @throws {Error} If filePath is invalid or file type is unsupported
+   */
   constructor(filePath = null) {
     // -----------------------------------
     // Resolve default DB path if missing

@@ -1,5 +1,10 @@
 import Logging from "./Logging.js";
 
+/**
+ * LoggingFactory class
+ * Responsible for creating valid Logging instances.
+ * Provides helper methods for different operation types.
+ */
 class LoggingFactory {
   /**
    * Create a new logging entry

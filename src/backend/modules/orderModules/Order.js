@@ -1,6 +1,13 @@
 //Order.js
+/**
+ * Represents an Order entity in the system.
+ * Encapsulates order details including product, buyer, seller, and status.
+ */
 class Order {
-  // Attributes: orderId, product (stringified product object), buyerId, sellerId, dateCreated, status, volume, totalCost
+  /**
+   * List of all attributes for an Order.
+   * @type {string[]}
+   */
   static ATTRIBUTES = [
     "orderId",
     "product",
@@ -12,6 +19,10 @@ class Order {
     "totalCost",
   ];
 
+  /**
+   * Set of valid order statuses.
+   * @type {Set<string>}
+   */
   static STATUSES = new Set([
     "pending",
     "confirmed",
@@ -20,7 +31,10 @@ class Order {
     "cancelled",
   ]);
 
-  // Rules for validation
+  /**
+   * Validation rules for Order attributes.
+   * @type {Object.<string, function(any): boolean>}
+   */
   static RULES = {
     orderId: (v) => typeof v === "number" && v > 0,
     product: (v) => typeof v === "string" && v.length > 0,
@@ -32,7 +46,10 @@ class Order {
     totalCost: (v) => typeof v === "number" && v >= 0,
   };
 
-  // Mutable attributes can be updated
+  /**
+   * List of mutable attributes that can be updated.
+   * @type {string[]}
+   */
   static MUTABLE = ["product", "status", "volume", "totalCost"];
 
   #orderId;
@@ -44,6 +61,17 @@ class Order {
   #volume;
   #totalCost;
 
+  /**
+   * Creates a new Order instance.
+   * @param {number} orderId - Unique identifier for the order.
+   * @param {string} product - Stringified product object.
+   * @param {number} buyerId - ID of the buyer.
+   * @param {number} sellerId - ID of the seller.
+   * @param {number} volume - Quantity of items ordered.
+   * @param {number} totalCost - Total cost of the order.
+   * @param {string} [status="pending"] - Current status of the order.
+   * @throws {Error} If any input validation fails.
+   */
   constructor(
     orderId,
     product,
@@ -78,11 +106,22 @@ class Order {
     this.#totalCost = totalCost;
   }
 
+  /**
+   * Validates a specific attribute against defined rules.
+   * @param {string} attr - The attribute name to validate.
+   * @param {any} value - The value to check.
+   * @returns {boolean} True if valid, false otherwise.
+   */
   static validateInput(attr, value) {
     const rule = Order.RULES[attr];
     return rule ? rule(value) : false;
   }
 
+  /**
+   * Retrieves the value of a specific attribute.
+   * @param {string} attr - The attribute name.
+   * @returns {any} The value of the attribute.
+   */
   getAttribute(attr) {
     switch (attr) {
       case "orderId":

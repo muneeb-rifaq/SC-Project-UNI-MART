@@ -6,10 +6,20 @@ import LoggingFactory from "./LoggingFactory.js";
 import LoggingSQLRepository from "./repository/LoggingSQLRepository.js";
 import LoggingJSONRepository from "./repository/LoggingJSONRepository.js";
 
+/**
+ * LoggingService class
+ * Manages the lifecycle and retrieval of audit logs.
+ * Handles persistence via repositories (SQL or JSON).
+ */
 class LoggingService {
   #logs;
   #repository;
 
+  /**
+   * Initializes the LoggingService.
+   * @param {string} [filePath] - Path to the storage file (DB or JSON). Defaults to unimartDB.db
+   * @throws {Error} If filePath is invalid or file type is unsupported
+   */
   constructor(filePath = null) {
     // -----------------------------------
     // Resolve default DB path if missing

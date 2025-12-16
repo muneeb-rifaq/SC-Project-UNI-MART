@@ -263,12 +263,6 @@ const AdminDashboard = () => {
   const handleSubmitUser = async (e) => {
     e.preventDefault();
 
-    // Validate that role is not admin
-    if (userFormData.role === "admin") {
-      alert("Cannot create admin users. Only buyers and sellers allowed.");
-      return;
-    }
-
     try {
       await api.post("/admin/users", userFormData);
       alert("User created successfully!");
@@ -550,6 +544,7 @@ const AdminDashboard = () => {
             >
               <option value="buyer">🛍️ Buyer</option>
               <option value="seller">💼 Seller</option>
+              <option value="admin">🛡️ Admin</option>
             </select>
           </div>
           <div className="form-actions">

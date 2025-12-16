@@ -1,4 +1,8 @@
 // User.js
+/**
+ * Represents a User entity in the system.
+ * Encapsulates user details including credentials, role, and timestamps.
+ */
 class User {
   // -------------------------------------------
   // Attribute metadata (Centralized definitions)
@@ -16,7 +20,10 @@ class User {
   //   "lastLogin",
   // ];
 
-  // Expected validation rules for each attribute
+  /**
+   * Validation rules for User attributes.
+   * @type {Object.<string, function(any): boolean>}
+   */
   static RULES = {
     userId: (v) => typeof v === "number" && v > 0,
     username: (v) => typeof v === "string" && v.length > 0,
@@ -28,7 +35,10 @@ class User {
     lastLogin: (v) => v === null || typeof v === "string",
   };
 
-  // Which attributes can be modified
+  /**
+   * List of mutable attributes that can be updated.
+   * @type {string[]}
+   */
   static MUTABLE = ["username", "email", "passwordHash", "lastLogin"];
 
   // Private fields
@@ -41,7 +51,15 @@ class User {
   #updatedAt;
   #lastLogin;
 
-  //constructor with 5 inputs for simpler creation
+  /**
+   * Creates a new User instance.
+   * @param {number} userId - Unique identifier for the user.
+   * @param {string} username - The user's username.
+   * @param {string} email - The user's email address.
+   * @param {string} passwordHash - The hashed password.
+   * @param {string} role - The user's role (buyer, seller, admin).
+   * @throws {Error} If any input validation fails.
+   */
   constructor(userId, username, email, passwordHash, role) {
     if (!User.validateInput("userId", userId))
       throw new Error(`Invalid userId: ${userId}`);
@@ -66,6 +84,12 @@ class User {
   // -----------------------------
   // Centralized validation lookup
   // -----------------------------
+  /**
+   * Validates a specific attribute against defined rules.
+   * @param {string} attributeName - The attribute name to validate.
+   * @param {any} value - The value to check.
+   * @returns {boolean} True if valid, false otherwise.
+   */
   static validateInput(attributeName, value) {
     const rule = User.RULES[attributeName];
     return rule ? rule(value) : false;
@@ -74,6 +98,12 @@ class User {
   // -----------------------------
   // Update attribute safely
   // -----------------------------
+  /**
+   * Updates a specific attribute if it is mutable and valid.
+   * @param {string} attributeName - The attribute to update.
+   * @param {any} newValue - The new value.
+   * @returns {boolean} True if update successful, false otherwise.
+   */
   updateAttribute(attributeName, newValue) {
     // Check if attribute is allowed to change
     if (!User.MUTABLE.includes(attributeName)) return false;

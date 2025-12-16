@@ -7,10 +7,20 @@ import OrderFactory from "./OrderFactory.js";
 import OrderSQLRepository from "./repository/OrderSQLRepository.js";
 import OrderJSONRepository from "./repository/OrderJSONRepository.js";
 
+/**
+ * Service class for managing Order entities.
+ * Handles storage, retrieval, and business logic for orders.
+ */
 class OrderService {
   #orders;
   #repository;
 
+  /**
+   * Initializes the OrderService with a specific file path for storage.
+   * Automatically selects between JSON and SQL repositories based on file extension.
+   * @param {string} [filePath=null] - Path to the storage file. Defaults to the standard DB path if not provided.
+   * @throws {Error} If filePath is not a string or has an invalid extension.
+   */
   constructor(filePath = null) {
     // -----------------------------------
     // Resolve default DB path if missing
@@ -47,11 +57,25 @@ class OrderService {
     }
   }
 
-  // Return immutable copies
+  /**
+   * Retrieves all orders as immutable objects.
+   * @returns {Order[]} Array of Order instances.
+   */
   getAll() {
     return this.#orders.map((o) => Order.fromJSON(o.toJSON()));
   }
 
+  /**
+   * Creates and adds a new order to the system.
+   * @param {object|string} productObj - The product being ordered.
+   * @param {number} buyerId - ID of the buyer.
+   * @param {number} sellerId - ID of the seller.
+   * @param {number} volume - Quantity ordered.
+   * @param {number} totalCost - Total cost of the order.
+   * @param {string} [status="pending"] - Initial status of the order.
+   * @returns {Promise<Order|null>} The created Order object if successful, null otherwise.
+   * @throws {Error} If validation fails for any parameter.
+   */
   async addOrder(
     productObj,
     buyerId,
@@ -95,6 +119,11 @@ class OrderService {
     return persisted;
   }
 
+  /**
+   * Deletes an order by its ID.
+   * @param {number} id - The ID of the order to delete.
+   * @returns {boolean} True if deletion was successful, false otherwise.
+   */
   deleteOrder(id) {
     if (typeof id !== "number" || id <= 0) return false;
     const ok = this.#repository.deleteOrder(id);

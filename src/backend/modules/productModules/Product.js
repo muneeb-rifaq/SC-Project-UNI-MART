@@ -1,4 +1,8 @@
 // Product.js
+/**
+ * Represents a Product entity in the system.
+ * Encapsulates product details including name, description, price, stock, and category.
+ */
 class Product {
   #productId;
   #sellerId;
@@ -10,7 +14,15 @@ class Product {
   #categoryId; // <-- NEW ATTRIBUTE
 
   /**
-   * Create a new Product instance
+   * Create a new Product instance.
+   * @param {number} productId - Unique identifier for the product.
+   * @param {number} sellerId - ID of the seller who owns the product.
+   * @param {string} name - Name of the product.
+   * @param {string} description - Description of the product.
+   * @param {number} price - Price of the product.
+   * @param {number} stock - Available stock quantity.
+   * @param {number} categoryId - ID of the category the product belongs to.
+   * @throws {Error} If any input validation fails.
    */
   constructor(
     productId,
@@ -47,7 +59,10 @@ class Product {
   }
 
   /**
-   * Validate input for a specific attribute
+   * Validate input for a specific attribute.
+   * @param {string} attributeName - The name of the attribute to validate.
+   * @param {any} value - The value to check.
+   * @returns {boolean} True if valid, false otherwise.
    */
   static validateInput(attributeName, value) {
     switch (attributeName) {
@@ -70,7 +85,10 @@ class Product {
   }
 
   /**
-   * Update allowed attributes
+   * Update allowed attributes.
+   * @param {string} attributeName - The name of the attribute to update.
+   * @param {any} newValue - The new value for the attribute.
+   * @returns {boolean} True if the update was successful, false otherwise.
    */
   updateAttribute(attributeName, newValue) {
     if (!Product.validateInput(attributeName, newValue)) return false;

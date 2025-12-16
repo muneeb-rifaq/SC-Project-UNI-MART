@@ -1,4 +1,10 @@
 // Logging.js
+
+/**
+ * Logging class
+ * Represents a single audit log entry in the system.
+ * Immutable record of an action performed by a user.
+ */
 class Logging {
   #logId;
   #tableName;
@@ -7,6 +13,17 @@ class Logging {
   #timestamp;
   #description;
 
+  /**
+   * Creates a new Logging instance.
+   * @constructor
+   * @param {number} logId - Unique identifier for the log
+   * @param {string} tableName - Name of the table/resource affected
+   * @param {string} operationType - Type of operation (CREATE, READ, UPDATE, DELETE)
+   * @param {string} performedBy - Identifier of the user who performed the action
+   * @param {string} [timestamp] - ISO date string of the event (defaults to now)
+   * @param {string} [description] - Additional details about the event
+   * @throws {Error} If attributes are invalid
+   */
   constructor(
     logId,
     tableName,

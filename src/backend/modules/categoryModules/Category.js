@@ -1,10 +1,25 @@
 // Category.js
+
+/**
+ * Category class
+ * Represents a product category in the system.
+ * Encapsulates category data and validation logic.
+ */
 class Category {
   #categoryId;
   #categoryName;
   #description;
   #dateCreated;
 
+  /**
+   * Creates a new Category instance.
+   * @constructor
+   * @param {number} categoryId - Unique identifier for the category
+   * @param {string} categoryName - Name of the category
+   * @param {string} description - Description of the category
+   * @param {string} [dateCreated] - ISO date string of creation (defaults to now)
+   * @throws {Error} If attributes are invalid
+   */
   constructor(categoryId, categoryName, description, dateCreated) {
     this.#categoryId = categoryId;
     this.#categoryName = categoryName;

@@ -8,14 +8,15 @@ import Order from "./Order.js";
 class OrderFactory {
   /**
    * Create a new Order.
-   * @param {number} orderId
-   * @param {object|string} productObj - either an object (will be stringified) or a string
-   * @param {number} buyerId
-   * @param {number} sellerId
-   * @param {number} volume
-   * @param {number} totalCost
-   * @param {string} status - optional, defaults to 'pending'
-   * @returns {Order}
+   * @param {number} orderId - Unique identifier for the order.
+   * @param {object|string} productObj - Either an object (will be stringified) or a string representing the product.
+   * @param {number} buyerId - ID of the buyer.
+   * @param {number} sellerId - ID of the seller.
+   * @param {number} volume - Quantity of items ordered.
+   * @param {number} totalCost - Total cost of the order.
+   * @param {string} [status="pending"] - Optional status, defaults to 'pending'.
+   * @returns {Order} A new Order instance.
+   * @throws {Error} If product object is not serializable or status is invalid.
    */
   static makeOrder(
     orderId,
@@ -54,7 +55,11 @@ class OrderFactory {
     );
   }
 
-  // convenience sample
+  /**
+   * Creates a sample order for testing or demonstration purposes.
+   * @param {number} [id=1] - The ID to use for the sample order.
+   * @returns {Order} A sample Order instance.
+   */
   static makeSampleOrder(id = 1) {
     const product = { sample: `product-${id}`, price: 100 + id };
     return this.makeOrder(id, product, 1, 1, 1, 100 + id, "pending");

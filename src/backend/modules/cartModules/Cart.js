@@ -2,9 +2,10 @@ import Product from "../productModules/Product.js";
 
 /**
  * Cart class
- * Stores independent product instances (one per unit of quantity)
- * Provides ONLY: view, add, delete
- * No attribute modification allowed.
+ * Represents a shopping cart for a specific user.
+ * Stores independent product instances (one per unit of quantity).
+ * Provides ONLY: view, add, delete operations.
+ * No attribute modification allowed directly.
  */
 class Cart {
   #cartId;
@@ -12,10 +13,11 @@ class Cart {
   #items; // array of Product instances (each representing 1 unit)
 
   /**
+   * Creates a new Cart instance.
    * @constructor
-   * @param {number} cartId
-   * @param {number} userId
-   * @param {Product[]} items - array of Product instances
+   * @param {number} cartId - Unique identifier for the cart
+   * @param {number} userId - ID of the user who owns the cart
+   * @param {Product[]} items - Array of Product instances (default is empty)
    */
   constructor(cartId, userId, items = []) {
     this.#cartId = cartId;
